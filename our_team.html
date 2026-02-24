@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StudentMitra • The United Orbit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --gold: #c5a059; 
+            --gold-bright: #ffe5b4;
+            --bg: #010204; 
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: #fff;
+            overflow: hidden;
+            height: 100dvh; /* Use dynamic viewport height for mobile browsers */
+            width: 100vw;
+            background: radial-gradient(circle at center, #05070a 0%, #000 100%);
+        }
+
+        /* --- Starfield --- */
+        #starfield {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+        }
+
+        .star-container {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            will-change: transform;
+        }
+
+        .star-point {
+            width: 2px; height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #fff;
+            transition: all 0.6s ease;
+        }
+
+        .star-name {
+            font-size: 0.4rem;
+            margin-top: 3px;
+            color: rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
+            white-space: nowrap;
+            transition: all 0.6s ease;
+            pointer-events: none;
+        }
+
+        .star-container.active .star-point {
+            background: var(--gold-bright);
+            box-shadow: 0 0 15px var(--gold-bright), 0 0 30px var(--gold);
+            transform: scale(2.5);
+        }
+
+        .star-container.active .star-name {
+            color: #fff;
+            font-size: 0.65rem;
+            text-shadow: 0 0 8px var(--gold);
+            opacity: 1;
+        }
+
+        /* --- Solar System Center --- */
+        #solar-system {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sun-container { 
+            width: 80px; height: 80px; 
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.5s ease;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .sun-logo { 
+            width: 100%; 
+            filter: drop-shadow(0 0 15px var(--gold));
+            transition: all 0.5s ease;
+        }
+
+        /* --- Orbit --- */
+        .unified-orbit {
+            position: absolute;
+            border: 1px solid rgba(197, 160, 89, 0.15);
+            border-radius: 50%;
+            animation: rotate 60s linear infinite;
+            /* Default Mobile Size */
+            width: 260px; height: 260px;
+            pointer-events: none;
+        }
+
+        .dept-planet {
+            position: absolute;
+            width: 60px; height: 60px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.45rem;
+            font-weight: 600;
+            color: var(--gold-bright);
+            pointer-events: auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: counterRotate 60s linear infinite;
+            padding: 5px;
+        }
+
+        /* Mobile Interaction (Touch) */
+        .dept-planet:active, .dept-planet:hover {
+            background: var(--gold);
+            color: #000;
+            transform: scale(1.2);
+            box-shadow: 0 0 30px var(--gold);
+            z-index: 100;
+        }
+
+        /* --- Desktop Scaling --- */
+        @media (min-width: 768px) {
+            .sun-container { width: 180px; height: 180px; }
+            .unified-orbit { width: 550px; height: 550px; animation-duration: 100s; }
+            .dept-planet { width: 110px; height: 110px; font-size: 0.7rem; animation-duration: 100s; }
+            .star-name { font-size: 0.5rem; }
+        }
+
+        /* Tablet adjustment */
+        @media (min-width: 480px) and (max-width: 767px) {
+            .unified-orbit { width: 380px; height: 380px; }
+            .dept-planet { width: 80px; height: 80px; font-size: 0.55rem; }
+        }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes counterRotate { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+    </style>
+</head>
+<body>
+
+<div id="starfield"></div>
+
+<section id="solar-system">
+    <div class="sun-container">
+        <img src="SM NEW LOGO_20251221_144929_0000.png" alt="StudentMitra" class="sun-logo">
+    </div>
+    <div class="unified-orbit" id="orbitRing"></div>
+</section>
+
+<script>
+    const departments = ["CONTENT", "NETWORK", "SOCIAL MEDIA", "DESIGNING", "MARKETING", "CAMPUS AMBASSADOR"];
+    const volunteerNames = ["Subash Reddy", "M. Sekhar", "A.Harika", "Ynizam kottu", "Ch.Rajesh", "T.Bhavitha", "p siddartha", "yohetha", "Padma sri", "Sowmya Sri", "srishanth", "imran basha", "S.Tanush", "R.Neelima", "Nikhitha", "P.Meghana", "K.Ashwanth", "M.Bharath", "B.Ajay Surya", "Moulika", "N.Thanusha", "K.Sai Kiran", "G.Sai Charan", "M.Lavanya", "K.Nikhil", "Sk.Jani Basha", "G.Pavani", "B.Swathi", "K.Akhil", "K.Venkatesh", "M.Karthik", "B.Harika", "K.Sowmya", "T.Manoj", "P.Rakesh", "K.Sai Teja", "G.Naveen", "M.Praveen", "K.Lokesh", "G.Sravani", "P.Divya", "K.Varsha", "G.Hemanth", "K.Kalyan", "P.Naveen", "B.Mahesh", "G.Teja", "B.Kiran", "G.Praveen", "K.Sai", "G.Chandu", "B.Siva", "P.Rohith", "G.Akash", "B.Manasa", "K.Sushma", "P.Karthik", "G.Harsha", "B.Pooja", "K.Sneha", "P.Raghu", "G.Naveena", "B.Prathyusha", "K.Vineeth", "P.Ramesh", "G.Yaswanth", "B.Sireesha", "K.Satish", "P.Srinivas", "G.Durga", "B.Lakshmi", "K.Naresh", "P.Madhavi", "G.Gopi", "B.Sasi", "K.Nithin", "P.Phani", "G.Mounika", "B.Uday", "K.Rajesh", "P.Vijay", "G.Bhavani", "B.Anil", "K.Kavya", "P.Srikanth", "G.Ramya", "B.Sujith", "K.Padma", "P.Murali", "G.Sindhu", "B.Prasanth", "K.Jyothi", "P.Nagaraju", "G.Chinni", "B.Krishna", "K.Meghana", "P.Balu", "G.Tejas", "B.Lavanya", "K.Rupa", "P.Sateesh", "G.Hema", "B.Aravind", "K.Koushik", "P.Sahithi", "G.Ajay", "B.Sujatha", "K.Ganesh", "P.Pranavi", "G.Sruthi", "B.Rohini", "K.Devi", "P.Sumanth", "G.Chandrika", "B.Raj", "K.Renu", "P.Ashok", "G.Bharathi", "B.Vivek", "K.Shilpa", "P.Kishore", "G.Swapna", "B.Rani", "K.Venkatesh", "P.Sunil", "G.Soumya", "B.Madhusudhan", "K.Vani", "P.Chandra", "G.Pradeep"];
+
+    const starfield = document.getElementById('starfield');
+    const orbitRing = document.getElementById('orbitRing');
+
+    // Setup stars with mobile-aware bounds
+    const stars = [];
+    volunteerNames.forEach(name => {
+        const el = document.createElement('div');
+        el.className = 'star-container';
+        el.innerHTML = `<div class="star-point"></div><div class="star-name">${name}</div>`;
+        starfield.appendChild(el);
+
+        stars.push({
+            el: el,
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            vx: (Math.random() - 0.5) * 0.25,
+            vy: (Math.random() - 0.5) * 0.25
+        });
+    });
+
+    function animate() {
+        stars.forEach(s => {
+            s.x += s.vx; s.y += s.vy;
+            if (s.x < 0 || s.x > window.innerWidth) s.vx *= -1;
+            if (s.y < 0 || s.y > window.innerHeight) s.vy *= -1;
+            s.el.style.transform = `translate3d(${s.x}px, ${s.y}px, 0)`; // use translate3d for better mobile performance
+        });
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Fast spotlight for mobile engagement
+    let lastStarred = null;
+    setInterval(() => {
+        if (lastStarred) lastStarred.classList.remove('active');
+        const randomIndex = Math.floor(Math.random() * stars.length);
+        lastStarred = stars[randomIndex].el;
+        lastStarred.classList.add('active');
+    }, 1800);
+
+    function setupOrbit() {
+        const total = departments.length;
+        const radius = orbitRing.offsetWidth / 2;
+        orbitRing.innerHTML = '';
+        
+        departments.forEach((dept, i) => {
+            const planet = document.createElement('div');
+            planet.className = 'dept-planet';
+            planet.innerHTML = dept.replace(' ', '<br>'); // Better fit for small circles
+            
+            const angle = (i * (360 / total)) * (Math.PI / 180);
+            const x = radius * Math.cos(angle);
+            const y = radius * Math.sin(angle);
+            
+            // Adjust offset based on planet size
+            const pSize = planet.offsetWidth || (window.innerWidth < 768 ? 60 : 110);
+            planet.style.left = `calc(50% + ${x}px - ${pSize/2}px)`;
+            planet.style.top = `calc(50% + ${y}px - ${pSize/2}px)`;
+            
+            orbitRing.appendChild(planet);
+        });
+    }
+
+    // Refresh layout on resize or orientation change
+    window.addEventListener('resize', setupOrbit);
+    setupOrbit();
+</script>
+
+</body>
+</html>
